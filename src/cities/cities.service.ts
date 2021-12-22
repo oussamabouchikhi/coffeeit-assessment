@@ -36,4 +36,8 @@ export class CitiesService {
 
     return city;
   }
+
+  getAllCities() {
+    return this.cityModel.find();
+  }
 }
