@@ -1,26 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CitiesModule } from './cities/cities.module';
 
 import * as dotenv from 'dotenv';
+import { HttpModule } from '@nestjs/axios';
+import { MongooseModule } from '@nestjs/mongoose';
 dotenv.config();
 
 @Module({
   imports: [
+    HttpModule,
+    CitiesModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'mongodb',
-      url: process.env.MONGODB_URI,
-      ssl: true,
-      useNewUrlParser: true,
-      entities: [__dirname + '/../**/*.entity{.ts|.js}'],
-      synchronize: true,
-    }),
+    MongooseModule.forRoot(process.env.MONGODB_URI),
   ],
   controllers: [AppController],
   providers: [AppService],
