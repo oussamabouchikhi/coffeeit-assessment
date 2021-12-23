@@ -29,6 +29,7 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/swagger": "^5.1.5",
     "@nestjs/typeorm": "^8.0.2",
+    "class-validator": "^0.13.2",
     "dotenv": "^10.0.0",
     "mongodb": "^4.2.2",
     "mongoose": "^6.1.2",

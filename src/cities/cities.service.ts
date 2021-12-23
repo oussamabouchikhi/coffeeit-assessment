@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Delete, Injectable, NotFoundException, Param } from '@nestjs/common';
 import { lastValueFrom, map } from 'rxjs';
 import { CreateCityDto } from './dto/create-city.dto';
 
@@ -7,6 +7,7 @@ import { HttpService } from '@nestjs/axios';
 import { City } from './city.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ObjectId } from 'mongodb';
 dotenv.config();
 
 @Injectable()
@@ -39,5 +40,16 @@ export class CitiesService {
 
   getAllCities() {
     return this.cityModel.find();
+  }
+
+  @Delete(':id')
+  async deleteCity(id) {
+    const cityId = new ObjectId(id);
+    const result = await this.cityModel.deleteOne({ _id: cityId }).exec();
+    console.log(result);
+
+    if (result.deletedCount === 0) {
+      throw new NotFoundException('No city with such id has been found.');
+    }
   }
 }
