@@ -5,6 +5,7 @@ export const CitySchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    index: true,
   },
   weather: mongoose.SchemaTypes.Mixed,
 });

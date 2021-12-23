@@ -17,7 +17,9 @@ dotenv.config();
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI),
+    MongooseModule.forRoot(process.env.MONGODB_URI, {
+      autoIndex: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
