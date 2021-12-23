@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, Delete, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Delete,
+  Param,
+  Logger,
+} from '@nestjs/common';
 import {
   ApiBody,
   ApiConflictResponse,
@@ -11,6 +19,8 @@ import { CreateCityDto } from './dto/create-city.dto';
 
 @Controller('cities')
 export class CitiesController {
+  private logger = new Logger('CitiesController');
+
   constructor(private readonly citiesService: CitiesService) {}
 
   /*
@@ -24,6 +34,7 @@ export class CitiesController {
   @ApiBody({ type: CreateCityDto })
   @ApiConflictResponse({ description: 'This city already exists' })
   createCity(@Body() createCityDto: CreateCityDto) {
+    this.logger.verbose(`Creating a new city...`);
     return this.citiesService.createCity(createCityDto);
   }
 
@@ -33,6 +44,7 @@ export class CitiesController {
   @Get()
   @ApiCreatedResponse({ description: 'Get all cities' })
   getAllCities() {
+    this.logger.verbose(`Creating all new cities...`);
     return this.citiesService.getAllCities();
   }
 
@@ -49,6 +61,7 @@ export class CitiesController {
     description: 'No city with such id has been found.',
   })
   deleteCity(@Param('id') id) {
+    this.logger.verbose(`Deleting city with id ${id}`);
     return this.citiesService.deleteCity(id);
   }
 }

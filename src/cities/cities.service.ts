@@ -1,4 +1,4 @@
-import { Delete, Injectable, NotFoundException, Param } from '@nestjs/common';
+import { Delete, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { lastValueFrom, map } from 'rxjs';
 import { CreateCityDto } from './dto/create-city.dto';
 
@@ -12,44 +12,58 @@ dotenv.config();
 
 @Injectable()
 export class CitiesService {
+  private logger = new Logger('CitiesService');
+
   constructor(
     @InjectModel('City') private readonly cityModel: Model<City>,
     private readonly httpService: HttpService,
   ) {}
 
   async createCity(createCityDto: CreateCityDto) {
-    const { name } = createCityDto;
+    try {
+      const { name } = createCityDto;
 
-    const weather = await lastValueFrom(
-      this.httpService
-        .get(
-          `https://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${process.env.OPEN_WEATHER_API_KEY}`,
-        )
-        .pipe(map((response) => response.data)),
-    );
+      const weather = await lastValueFrom(
+        this.httpService
+          .get(
+            `https://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${process.env.OPEN_WEATHER_API_KEY}`,
+          )
+          .pipe(map((response) => response.data)),
+      );
 
-    const city = new this.cityModel({
-      name,
-      weather,
-    });
+      const city = new this.cityModel({
+        name,
+        weather,
+      });
 
-    await city.save();
+      await city.save();
 
-    return city;
+      return city;
+    } catch (error) {
+      this.logger.error(`Error creating a nex city`, error);
+    }
   }
 
   getAllCities() {
-    return this.cityModel.find();
+    try {
+      return this.cityModel.find();
+    } catch (error) {
+      this.logger.error('Error getting all cities', error);
+    }
   }
 
   @Delete(':id')
   async deleteCity(id) {
-    const cityId = new ObjectId(id);
-    const result = await this.cityModel.deleteOne({ _id: cityId }).exec();
-    console.log(result);
+    try {
+      const cityId = new ObjectId(id);
+      const result = await this.cityModel.deleteOne({ _id: cityId }).exec();
+      console.log(result);
 
-    if (result.deletedCount === 0) {
-      throw new NotFoundException('No city with such id has been found.');
+      if (result.deletedCount === 0) {
+        throw new NotFoundException('No city with such id has been found.');
+      }
+    } catch (error) {
+      this.logger.error(`Error deleting city with id ${id}`, error);
     }
   }
 }
