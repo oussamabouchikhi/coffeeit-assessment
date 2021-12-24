@@ -101,7 +101,8 @@ export class CitiesService {
   closeJob() {
     const job = this.schedulerRegistry.getCronJob('myJob');
 
-    const endTime = this.startTime + 1000 * 60 * 60 * 24 * Number(this.numberOfDays);
+    const endTime =
+      this.startTime + 1000 * 60 * 60 * 24 * Number(this.numberOfDays);
 
     if (job.lastDate().getTime() >= endTime) {
       job.stop();
@@ -121,18 +122,14 @@ export class CitiesService {
   }
 
   async GetCityWeather(cityName) {
-    const city = await this.cityModel.findOne({ name: cityName });
+    let city = await this.cityModel.findOne({ name: cityName });
 
-    let cityWeather = undefined;
     if (!city) {
-      cityWeather = await this.getCityLastWeather(cityName);
+      city = await this.createCity({ name: cityName });
     }
 
-    // const lat = city.weather.coord.lat;
-    // const lon = city.weather.coord.lon;
-    // paris coords
-    const lat = 48.8534;
-    const lon = 2.3488;
+    const lat = city['weather']['coord']['lat'];
+    const lon = city['weather']['coord']['lon'];
 
     const last7DaysWeather = await this.getCityLastXDaysWeather(lat, lon);
 
@@ -140,7 +137,7 @@ export class CitiesService {
 
     const res = {
       name: cityName,
-      weather: cityWeather || city.weather,
+      weather: city.weather,
       last7DaysWeather,
       next7DaysWeather,
     };
