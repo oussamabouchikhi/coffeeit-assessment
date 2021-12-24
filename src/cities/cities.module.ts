@@ -4,10 +4,12 @@ import { CitiesController } from './cities.controller';
 import { HttpModule } from '@nestjs/axios';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CitySchema } from './city.model';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     HttpModule,
+    ScheduleModule.forRoot(),
     MongooseModule.forFeature([{ name: 'City', schema: CitySchema }]),
   ],
   controllers: [CitiesController],

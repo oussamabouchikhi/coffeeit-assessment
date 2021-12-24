@@ -8,10 +8,12 @@ import { CitiesModule } from './cities/cities.module';
 import * as dotenv from 'dotenv';
 import { HttpModule } from '@nestjs/axios';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ScheduleModule } from '@nestjs/schedule';
 dotenv.config();
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     HttpModule,
     CitiesModule,
     ConfigModule.forRoot({
