@@ -101,7 +101,7 @@ export class CitiesService {
   closeJob() {
     const job = this.schedulerRegistry.getCronJob('myJob');
 
-    const endTime = this.startTime + 1000 * Number(this.numberOfDays);
+    const endTime = this.startTime + 1000 * 60 * 60 * 24 * Number(this.numberOfDays);
 
     if (job.lastDate().getTime() >= endTime) {
       job.stop();
