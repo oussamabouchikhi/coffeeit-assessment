@@ -44,8 +44,20 @@ export class CitiesController {
   @Get()
   @ApiCreatedResponse({ description: 'Get all cities' })
   getAllCities() {
-    this.logger.verbose(`Creating all new cities...`);
+    this.logger.verbose(`Getting all new cities...`);
     return this.citiesService.getAllCities();
+  }
+
+  @Get('weather')
+  @ApiCreatedResponse({ description: 'Get all cities last known weather' })
+  GetCitiesWeather() {
+    return this.citiesService.GetCitiesWeather();
+  }
+
+  @Get(':city_name/weather')
+  @ApiCreatedResponse({ description: 'Get all cities last known weather' })
+  GetCityWeather(@Param('city_name') cityName: string) {
+    return this.citiesService.GetCityWeather(cityName);
   }
 
   /*
