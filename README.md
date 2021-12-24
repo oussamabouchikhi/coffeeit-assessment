@@ -1,42 +1,57 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+<p align='center'>
+  <a href="https://coffeeit.nl/" target="_blank">
+  <img src='https://coffeeit.nl/wp-content/uploads/2016/09/logo_dark_small_new.png' width="320" alt='coffee IT logo'>
+  </a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# 🎯 CoffeeIT backend assessment
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Backend assessment from CoffeeIT
 
-## Description
+## 📋 Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The assessment is to make an API that is able to get the weather information for
+certain cities.
 
-## Installation
+## ⬇ Installation
+
+Make sure you have Nodejs and Nestjs/cli installed
 
 ```bash
+~ node -v
+~ nest --version
+```
+
+```bash
+# Clone via SSH or any other method
+$ git clone git@github.com:oussamabouchikhi/coffeeit-assessment.git
+
+# CD into the project
+$ cd coffeeit-assessment
+
+# Install the dependencies
 $ npm install
 ```
 
-## Running the app
+## 🛠️ Configuration
+
+Rename the `sample.env` file to `.env` and put your Mongodb Atlas connection string & OpenWeatherMap api key
+
+`DAYS` property is for setting how many days to get fro city weather forcast
+for the `getCityNextXDaysWeather` function, by default it will get the next 7 days (we cannot set more than that for the free version)
+
+```.env
+MONGODB_URI=YOUR_MONGODB_ATLAS_CONNECTION_STRING
+OPEN_WEATHER_API_KEY=YOUR_API_KEY
+
+DAYS=NUMBER_OF_DAYS
+```
+
+## 🚀 Running the app
 
 ```bash
 # development
-$ npm run start
+$ npm start
 
 # watch mode
 $ npm run start:dev
@@ -45,29 +60,86 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## 🧪 Test
 
 ```bash
-# unit tests
-$ npm run test
+# unit tests (you can add the prefix --watch)
+$ yarn test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn test:cov
 ```
 
-## Support
+### Test scheduler
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+in `cities.service.ts` file add the bellow code
 
-## Stay in touch
+```typescript
+private count = 0
+numberOfSeconds = undefined; // if undefined or unspecified it will default to 7 seconds
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+  startTime = new Date().getTime();
+  @Cron(`0-59/1 * * * * *`, {
+    name: 'myJob',
+  })
+  handleCron() {
+    console.log(`${this.count + 1} - Called every second`);
+    this.count++;
+    this.closeJob();
+  }
 
-## License
+  closeJob() {
+    const job = this.schedulerRegistry.getCronJob('myJob');
 
-Nest is [MIT licensed](LICENSE).
+    const endTime = this.startTime + 1000 * (this.numberOfSeconds || 7);
+
+    if (job.lastDate().getTime() > endTime) {
+      job.stop();
+    }
+  }
+```
+
+in `cities.controller.ts` file add the bellow code
+
+```typescript
+@Get('test')
+testFunc() {
+  return this.citiesService.handleCron();
+}
+```
+
+you should get
+
+```markdown
+1 - Called every second
+2 - Called every second
+3 - Called every second
+4 - Called every second
+5 - Called every second
+6 - Called every second
+7 - Called every second
+```
+
+### Docker
+
+Make sure docker is running on your machine. And Obviously you installed it :)
+
+```bash
+
+
+# Build docker image
+docker-compose build
+
+# Show docker images
+docker images
+
+# Show docker images on running container
+docker ps -a
+
+# run the image
+Docker compose up
+
+```
