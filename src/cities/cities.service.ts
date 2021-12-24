@@ -60,6 +60,14 @@ export class CitiesService {
     }
   }
 
+  getCitiesWeather() {
+    try {
+      return this.cityModel.find();
+    } catch (error) {
+      this.logger.error('Error getting all cities weather', error);
+    }
+  }
+
   async getCityLastWeather(cityName) {
     return await lastValueFrom(
       this.httpService

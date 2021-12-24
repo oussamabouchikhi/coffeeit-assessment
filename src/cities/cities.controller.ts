@@ -12,6 +12,7 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiResponse,
 } from '@nestjs/swagger';
 import { CitiesService } from './cities.service';
@@ -38,24 +39,22 @@ export class CitiesController {
     return this.citiesService.createCity(createCityDto);
   }
 
-  /*
-   * Get all cities from DB
-   */
   @Get()
-  @ApiCreatedResponse({ description: 'Get all cities' })
+  @ApiOkResponse({ description: 'Get all cities' })
   getAllCities() {
-    this.logger.verbose(`Getting all new cities...`);
+    this.logger.verbose(`Getting all cities...`);
     return this.citiesService.getAllCities();
   }
 
   @Get('weather')
-  @ApiCreatedResponse({ description: 'Get all cities last known weather' })
-  GetCitiesWeather() {
-    return this.citiesService.GetCitiesWeather();
+  @ApiOkResponse({ description: 'Get all cities last known weather' })
+  getCitiesWeather() {
+    this.logger.verbose(`Getting Get all cities last known weather...`);
+    return this.citiesService.getCitiesWeather();
   }
 
   @Get(':city_name/weather')
-  @ApiCreatedResponse({ description: 'Get all cities last known weather' })
+  @ApiOkResponse({ description: 'Get city  last known weather' })
   GetCityWeather(@Param('city_name') cityName: string) {
     return this.citiesService.GetCityWeather(cityName);
   }
